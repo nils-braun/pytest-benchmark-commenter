@@ -2,9 +2,13 @@ name: 'Comment with Pytest-Benchmark Result'
 description: 'Read in the pytest-benchmark result and comment on a pull request'
 inputs:
   benchmark-file:
-    description: 'Where to find the json output pf pytest-benchmark'
+    description: 'Where to find the json output of pytest-benchmark'
     required: true
     default: 'output.json'
+  comparison-benchmark-file:
+    description: 'Where to find the json output of an old pytest-benchmark, for comparison. Empty for no comparison.'
+    required: false
+    default: ''
   token:
     description: 'GITHUB_TOKEN'
     default: ${{ github.token }}
