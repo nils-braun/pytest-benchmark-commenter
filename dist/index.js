@@ -1735,7 +1735,7 @@ function readJSON(filename) {
     const benchmarkJSON = JSON.parse(rawdata);
     let benchmarks = {};
     for (const benchmark of benchmarkJSON["benchmarks"]) {
-        benchmarks[benchmark["name"]] = new Benchmark(benchmark);
+        benchmarks[benchmark["fullname"]] = new Benchmark(benchmark);
     }
     return benchmarks;
 }

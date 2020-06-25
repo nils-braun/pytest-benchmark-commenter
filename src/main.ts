@@ -25,7 +25,7 @@ function readJSON(filename: string): any {
 
   let benchmarks : { [name: string] : Benchmark} = {};
   for(const benchmark of benchmarkJSON["benchmarks"]) {
-    benchmarks[benchmark["name"]] = new Benchmark(benchmark);
+    benchmarks[benchmark["fullname"]] = new Benchmark(benchmark);
   }
 
   return benchmarks;
