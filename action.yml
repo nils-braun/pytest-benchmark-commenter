@@ -1,10 +1,14 @@
 name: 'Comment with Pytest-Benchmark Result'
 description: 'Read in the pytest-benchmark result and comment on a pull request'
 inputs:
-  benchmark-file:  
+  benchmark-file:
     description: 'Where to find the json output pf pytest-benchmark'
     required: true
     default: 'output.json'
+  token:
+    description: 'GITHUB_TOKEN'
+    default: ${{ github.token }}
+    required: true
 runs:
   using: 'node12'
   main: 'dist/index.js'
