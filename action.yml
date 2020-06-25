@@ -1,5 +1,9 @@
 name: 'Comment with Pytest-Benchmark Result'
+author: Nils Braun
 description: 'Read in the pytest-benchmark result and comment on a pull request'
+branding:
+  icon: bar-chart
+  color: green
 inputs:
   benchmark-file:
     description: 'Where to find the json output of pytest-benchmark'
