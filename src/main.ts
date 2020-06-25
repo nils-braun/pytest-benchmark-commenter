@@ -1,26 +1,69 @@
+import { exception } from "console";
+
 const core = require("@actions/core");
 const github = require("@actions/github");
 const fs = require("fs");
 
-function readJSON(filename: string): any {
-  const rawdata = fs.readFileSync(filename);
-  const benchmark = JSON.parse(rawdata);
-  return benchmark;
+class Benchmark {
+  max : number;
+  min : number;
+  mean : number;
+  stddev : number;
+
+  constructor(benchmark: any) {
+    const stats = benchmark["stats"];
+    this.max = stats["max"].toFixed(2);
+    this.min = stats["min"].toFixed(2);
+    this.mean = stats["mean"].toFixed(2);
+    this.stddev = stats["stddev"].toFixed(2);
+  }
 }
 
-function createMessage(benchmarks: any) {
+function readJSON(filename: string): any {
+  const rawdata = fs.readFileSync(filename);
+  const benchmarkJSON = JSON.parse(rawdata);
+
+  let benchmarks : { [name: string] : Benchmark} = {};
+  for(const benchmark of benchmarkJSON["benchmarks"]) {
+    benchmarks[benchmark["name"]] = new Benchmark(benchmark);
+  }
+
+  return benchmarks;
+}
+
+function createMessage(benchmarks: any, oldBenchmarks: any) {
   let message = "## Result of Benchmark Tests\n";
 
-  message += "| Benchmark | Min | Max | Mean |\n";
-  message += "| :--- | :---: | :---: | :---: |\n";
-  for (const benchmark of benchmarks["benchmarks"]) {
-    const stats = benchmark["stats"];
+  // Table Title
+  message += "| Benchmark | Min | Max | Mean |";
+  if(oldBenchmarks !== undefined) {
+    message += " Mean on Repo `HEAD` |"
+  }
+  message += "\n";
 
-    message += `| ${benchmark["fullname"]}`;
-    message += `| ${stats["min"].toFixed(2)}`;
-    message += `| ${stats["max"].toFixed(2)}`;
-    message += `| ${stats["mean"].toFixed(2)} `;
-    message += `+- ${stats["stddev"].toFixed(2)} |\n`;
+  // Table Column Definition
+  message += "| :--- | :---: | :---: | :---: |";
+  if(oldBenchmarks !== undefined) {
+    message += " :---: |"
+  }
+  message += "\n";
+
+  // Table Rows
+  for (const benchmarkName in benchmarks) {
+    const benchmark = benchmarks[benchmarkName];
+
+    message += `| ${benchmarkName}`;
+    message += `| ${benchmark.min}`;
+    message += `| ${benchmark.max}`;
+    message += `| ${benchmark.mean} `;
+    message += `+- ${benchmark.stddev} `;
+
+    if(oldBenchmarks !== undefined) {
+      const oldBenchmark = oldBenchmarks[benchmarkName]
+      message += `| ${oldBenchmark.mean} `;
+      message += `+- ${oldBenchmark.stddev} `;
+    }
+    message += "|\n"
   }
 
   return message;
@@ -34,9 +77,19 @@ async function run() {
 
   const githubToken = core.getInput("token");
   const benchmarkFileName = core.getInput("benchmark-file");
+  const oldBenchmarkFileName = core.getInput("comparison-benchmark-file");
 
   const benchmarks = readJSON(benchmarkFileName);
-  const message = createMessage(benchmarks);
+  let oldBenchmarks = undefined;
+  if(oldBenchmarkFileName) {
+    try {
+      oldBenchmarks = readJSON(oldBenchmarkFileName);
+    } catch (error) {
+      console.log("Can not read comparison file. Continue without it.");
+    }
+  }
+  const message = createMessage(benchmarks, oldBenchmarks);
+  console.log(message);
 
   const context = github.context;
   const pullRequestNumber = context.payload.pull_request.number;

@@ -28,7 +28,7 @@ jobs:
         run: |
           pytest benchmark.py --benchmark-only --benchmark-json output.json
       - name: Publish results
-        uses: nils-braun/pytest-benchmark-commenter@v1
+        uses: nils-braun/pytest-benchmark-commenter@v2
 ```
 
 The github action is only supported for pull request events.
@@ -39,3 +39,64 @@ The github action is only supported for pull request events.
 |------|---------|-------------|
 | github-token | `${{ secrets.GITHUB_TOKEN }}` | Change this, if you do not want to use the default token |
 | benchmark-file | `output.json` | Where your benchmark file is stored |
+| comparison-benchmark-file | empty | Where to find the json output of an old pytest-benchmark, for comparison. Empty for no comparison. |
+
+## Usage for comparison
+
+If you want to compare the results of the benchmarks now to the most recent run on your default branch, you could do the following:
+
+Create a workflow to upload the benchmarks on your default branch, e.g. `upload.yml`:
+
+```yaml
+name: Upload the artifact
+on:
+  push:
+    branches:
+      - <your default branch>
+
+jobs:
+  test_action_job:
+    runs-on: ubuntu-latest
+    name: Test out the action in this repository
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      ... do the benchmarking ...
+
+      - name: Upload the file
+        uses: actions/upload-artifact@v2
+        with:
+          name: benchmark_results
+          path: output.json
+```
+
+Now you can reference this in your workflow for comparison:
+
+```yaml
+name: Test Action
+on: [pull_request]
+
+jobs:
+  test_action_job:
+    runs-on: ubuntu-latest
+    name: Test out the action in this repository
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      ... do the benchmarking ...
+
+      - name: Download artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{ github.token }}
+          workflow: upload.yml
+          name: benchmark_results
+          path: old_benchmark
+        continue-on-error: true
+      - name: Run the action
+        uses: nils-braun/pytest-benchmark-commenter@v2
+        with:
+          comparison-benchmark-file: "old_benchmark/output.json"
+```

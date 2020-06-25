@@ -1704,7 +1704,7 @@ function checkMode (stat, options) {
 /***/ }),
 
 /***/ 198:
-/***/ (function(__unusedmodule, __unusedexports, __webpack_require__) {
+/***/ (function(__unusedmodule, exports, __webpack_require__) {
 
 "use strict";
 
@@ -1717,25 +1717,56 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 const core = __webpack_require__(470);
 const github = __webpack_require__(469);
 const fs = __webpack_require__(747);
+class Benchmark {
+    constructor(benchmark) {
+        const stats = benchmark["stats"];
+        this.max = stats["max"].toFixed(2);
+        this.min = stats["min"].toFixed(2);
+        this.mean = stats["mean"].toFixed(2);
+        this.stddev = stats["stddev"].toFixed(2);
+    }
+}
 function readJSON(filename) {
     const rawdata = fs.readFileSync(filename);
-    const benchmark = JSON.parse(rawdata);
-    return benchmark;
+    const benchmarkJSON = JSON.parse(rawdata);
+    let benchmarks = {};
+    for (const benchmark of benchmarkJSON["benchmarks"]) {
+        benchmarks[benchmark["name"]] = new Benchmark(benchmark);
+    }
+    return benchmarks;
 }
-function createMessage(benchmarks) {
+function createMessage(benchmarks, oldBenchmarks) {
     let message = "## Result of Benchmark Tests\n";
-    message += "| Benchmark | Min | Max | Mean |\n";
-    message += "| :--- | :---: | :---: | :---: |\n";
-    for (const benchmark of benchmarks["benchmarks"]) {
-        const stats = benchmark["stats"];
-        message += `| ${benchmark["fullname"]}`;
-        message += `| ${stats["min"].toFixed(2)}`;
-        message += `| ${stats["max"].toFixed(2)}`;
-        message += `| ${stats["mean"].toFixed(2)} `;
-        message += `+- ${stats["stddev"].toFixed(2)} |\n`;
+    // Table Title
+    message += "| Benchmark | Min | Max | Mean |";
+    if (oldBenchmarks !== undefined) {
+        message += " Mean on Repo `HEAD` |";
+    }
+    message += "\n";
+    // Table Column Definition
+    message += "| :--- | :---: | :---: | :---: |";
+    if (oldBenchmarks !== undefined) {
+        message += " :---: |";
+    }
+    message += "\n";
+    // Table Rows
+    for (const benchmarkName in benchmarks) {
+        const benchmark = benchmarks[benchmarkName];
+        message += `| ${benchmarkName}`;
+        message += `| ${benchmark.min}`;
+        message += `| ${benchmark.max}`;
+        message += `| ${benchmark.mean} `;
+        message += `+- ${benchmark.stddev} `;
+        if (oldBenchmarks !== undefined) {
+            const oldBenchmark = oldBenchmarks[benchmarkName];
+            message += `| ${oldBenchmark.mean} `;
+            message += `+- ${oldBenchmark.stddev} `;
+        }
+        message += "|\n";
     }
     return message;
 }
@@ -1747,8 +1778,19 @@ function run() {
         }
         const githubToken = core.getInput("token");
         const benchmarkFileName = core.getInput("benchmark-file");
+        const oldBenchmarkFileName = core.getInput("comparison-benchmark-file");
         const benchmarks = readJSON(benchmarkFileName);
-        const message = createMessage(benchmarks);
+        let oldBenchmarks = undefined;
+        if (oldBenchmarkFileName) {
+            try {
+                oldBenchmarks = readJSON(oldBenchmarkFileName);
+            }
+            catch (error) {
+                console.log("Can not read comparison file. Continue without it.");
+            }
+        }
+        const message = createMessage(benchmarks, oldBenchmarks);
+        console.log(message);
         const context = github.context;
         const pullRequestNumber = context.payload.pull_request.number;
         const octokit = new github.GitHub(githubToken);
