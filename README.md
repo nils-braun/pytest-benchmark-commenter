@@ -75,7 +75,10 @@ Now you can reference this in your workflow for comparison:
 
 ```yaml
 name: Test Action
-on: [pull_request]
+on:
+  pull_request:
+    branches:
+      - master
 
 jobs:
   test_action_job:
@@ -94,6 +97,7 @@ jobs:
           workflow: upload.yml
           name: benchmark_results
           path: old_benchmark
+          commit: ${{github.event.pull_request.base.sha}}
         continue-on-error: true
       - name: Run the action
         uses: nils-braun/pytest-benchmark-commenter@v2
