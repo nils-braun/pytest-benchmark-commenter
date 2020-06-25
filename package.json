@@ -1,6 +1,6 @@
 {
   "name": "pytest-benchmark-commenter",
-  "version": "1.0.0",
+  "version": "2.0.2",
   "description": "Read in the pytest-benchmark result and comment on a pull request",
   "main": "lib/main.js",
   "scripts": {
