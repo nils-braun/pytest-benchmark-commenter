@@ -1,0 +1,42 @@
+{
+  "name": "pytest-benchmark-commenter",
+  "version": "1.0.0",
+  "description": "Read in the pytest-benchmark result and comment on a pull request",
+  "main": "lib/main.js",
+  "scripts": {
+    "build": "tsc && ncc build lib/main.js",
+    "format": "prettier --write **/*.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nils-braun/pytest-benchmark-commenter"
+  },
+  "keywords": [
+    "actions",
+    "container",
+    "pull-request",
+    "comment",
+    "message",
+    "benchmark",
+    "pytest"
+  ],
+  "author": "Nils Braun",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nils-braun/pytest-benchmark-commenter/issues"
+  },
+  "homepage": "https://github.com/nils-braun/pytest-benchmark-commenter",
+  "dependencies": {
+    "@actions/core": "^1.0.0",
+    "@actions/exec": "^1.0.0",
+    "@actions/github": "^1.0.0",
+    "@actions/io": "^1.0.0",
+    "@actions/tool-cache": "^1.0.0",
+    "@zeit/ncc": "^0.22.3"
+  },
+  "devDependencies": {
+    "@types/node": "^12.0.4",
+    "prettier": "^1.17.1",
+    "typescript": "^3.5.1"
+  }
+}
