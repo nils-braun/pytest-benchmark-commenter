@@ -15,6 +15,7 @@ jobs:
           workflow: upload.yml
           name: benchmark_results
           path: old_benchmark
+          commit: ${{github.event.pull_request.base.sha}}
         continue-on-error: true
       - name: Run the action
         uses: ./ # Uses an action in the root directory
