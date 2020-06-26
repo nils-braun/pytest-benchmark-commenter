@@ -122,8 +122,4 @@ async function run() {
   }
 }
 
-try {
-  run()
-} catch (error) {
-  console.log("Workflow failed!", error);
-}
+run().catch(error => core.setFailed("Workflow failed! " + error.message));
