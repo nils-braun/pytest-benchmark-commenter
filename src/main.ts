@@ -1,5 +1,3 @@
-import { exception } from "console";
-
 const core = require("@actions/core");
 const github = require("@actions/github");
 const fs = require("fs");
@@ -94,7 +92,7 @@ async function run() {
   const context = github.context;
   const pullRequestNumber = context.payload.pull_request.number;
 
-  const octokit = new github.GitHub(githubToken);
+  const octokit = github.getOctokit(githubToken);
 
   // Now decide if we should issue a new comment or edit an old one
   const { data: comments } = await octokit.issues.listComments({
@@ -110,7 +108,7 @@ async function run() {
   });
 
   if (comment) {
-    octokit.issues.updateComment({
+    await octokit.issues.updateComment({
       ...context.repo,
       comment_id: comment.id,
       body: message
@@ -124,4 +122,8 @@ async function run() {
   }
 }
 
-run().catch(error => core.setFailed(error.message));
+try {
+  run()
+} catch (error) {
+  console.log("Workflow failed!", error);
+}
