@@ -21,5 +21,6 @@ jobs:
         uses: ./ # Uses an action in the root directory
         with:
           benchmark-file: "output.json"
-          benchmark-metrics: 'name,max,min,mean,ops,rounds'
+          benchmark-metrics: 'name,max,min,mean,ops'
           comparison-benchmark-file: "old_benchmark/output.json"
+          comparison-benchmark-metric: "mean"

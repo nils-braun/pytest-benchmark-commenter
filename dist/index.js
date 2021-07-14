@@ -6896,13 +6896,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.inputValidate = exports.createMessage = void 0;
 const core = __webpack_require__(470);
 const markdown_table_1 = __webpack_require__(366);
+function titleCase(str) {
+    return str.replace(/\w\S*/g, function (txt) {
+        return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
+}
 function createMessage(benchmarks, oldBenchmarks, metrics, compareMetric) {
     const title = "## Result of Benchmark Tests";
     let table = [];
     // Header building
-    let headers = [...metrics];
+    let headers = [...metrics.map(metric => titleCase(metric))];
     if (oldBenchmarks !== undefined) {
-        headers.push(...[compareMetric + " on Repo `HEAD`", "change"]);
+        headers.push(...[titleCase(compareMetric) + " on Repo `HEAD`", "Change"]);
     }
     table.push(headers);
     // Table Rows per Benchmark
