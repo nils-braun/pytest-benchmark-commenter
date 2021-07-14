@@ -144,6 +144,45 @@
                 ],
                 "iterations": 1
             }
+        },
+        {
+            "group": null,
+            "name": "test_benchmark_with_tight_loop",
+            "fullname": "tests/benchmark.py::test_benchmark_with_tight_loop",
+            "params": null,
+            "param": null,
+            "extra_info": {},
+            "options": {
+                "disable_gc": false,
+                "timer": "perf_counter",
+                "min_rounds": 5,
+                "max_time": 1.0,
+                "min_time": 5e-06,
+                "warmup": false
+            },
+            "stats": {
+                "min": 6.959997699595988e-05,
+                "max": 0.0013435000146273524,
+                "mean": 8.329195207645096e-05,
+                "stddev": 3.423380416356262e-05,
+                "rounds": 2336,
+                "median": 7.719997665844858e-05,
+                "iqr": 8.799994247965515e-06,
+                "q1": 7.490001735277474e-05,
+                "q3": 8.370001160074025e-05,
+                "iqr_outliers": 219,
+                "stddev_outliers": 84,
+                "outliers": "84;219",
+                "ld15iqr": 6.959997699595988e-05,
+                "hd15iqr": 9.690001024864614e-05,
+                "ops": 12005.96186150293,
+                "total": 0.19457000005058944,
+                "data": [
+                    0.00015010000788606703,
+                    0.00014230000670067966           
+                ],
+                "iterations": 1
+            }
         }
     ],
     "datetime": "2020-06-25T09:47:28.697691",
