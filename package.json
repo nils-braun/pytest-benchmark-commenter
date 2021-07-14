@@ -27,12 +27,13 @@
   },
   "homepage": "https://github.com/nils-braun/pytest-benchmark-commenter",
   "dependencies": {
-    "@actions/core": "^1.2.6",
-    "@actions/github": "^3.0.0"
+    "@actions/core": "^1.4.0",
+    "@actions/github": "^3.0.0",
+    "markdown-table": "^3.0.1"
   },
   "devDependencies": {
     "@zeit/ncc": "^0.22.3",
-    "prettier": "^2.0.5",
-    "typescript": "^3.9.5"
+    "prettier": "^2.3.2",
+    "typescript": "^3.9.10"
   }
 }
